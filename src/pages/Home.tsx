@@ -41,6 +41,23 @@ const Home = () => {
           <Card
             hoverable
             className="transform transition-all duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer bg-white border-0 rounded-xl overflow-hidden"
+            onClick={() => handleCardClick('/thermal-boundary-layer')}
+            bodyStyle={{ padding: '2rem' }}
+          >
+            <div className="flex flex-col items-center text-center">
+              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Thermal Boundary Layer Simulation</h3>
+              <p className="text-gray-600">Explore thermal boundary layer development with different fluid properties</p>
+            </div>
+          </Card>
+
+          <Card
+            hoverable
+            className="transform transition-all duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer bg-white border-0 rounded-xl overflow-hidden"
             bodyStyle={{ padding: '2rem' }}
           >
             <div className="flex flex-col items-center text-center">
