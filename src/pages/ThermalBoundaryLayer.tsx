@@ -116,9 +116,6 @@ const ThermalBoundaryLayer: React.FC = () => {
                 <Text>
                   Simulations were conducted for four fluids (Air, Water, Liquid Metal, and a Prandtl-1 fluid) with varying Prandtl numbers. Temperature contours were generated alongside velocity and thermal boundary layer thicknesses for different streamwise locations.
                 </Text>
-                <Text>
-                  Additionally, local convective heat transfer coefficients h(x) were computed based on wall temperature gradients and plotted to analyze the heat transfer variation along the plate. All plots were programmatically generated and saved for each fluid case.
-                </Text>
               </div>
             </div>
           </Card>

@@ -19,18 +19,18 @@ interface BoundaryLayerPoint {
 const BoundaryLayerAnalysis = () => {
   const [data, setData] = useState<DataPoint[]>([]);
   const [boundaryLayerData, setBoundaryLayerData] = useState<BoundaryLayerPoint[]>([]);
-  const [selectedX, setSelectedX] = useState(1.5);
+  const [selectedX, setSelectedX] = useState(0.5);
   const U_inf = 1.0;
 
-  // Parameters for both plots
-  const nu_vals = [5e-5, 1e-4, 2e-4];
-  const U_inf_vals = [0.3, 0.5, 0.7];
-  const x_locs = [1.5, 3, 4.5];
+  // Updated parameters
+  const nu_vals = [1e-7, 1e-6, 1.5e-5];  // Mercury, Water, Air [m^2/s]
+  const U_inf_vals = [0.1, 0.5, 0.9];    // [m/s]
+  const x_locs = [0.5, 1.5, 3, 4.5];     // [m]
 
   // State for common parameters
   const [selectedNu, setSelectedNu] = useState(nu_vals[0]);
   const [selectedUInf, setSelectedUInf] = useState(U_inf_vals[0]);
-  const [plotType, setPlotType] = useState<'v' | 'Cf'>('v');
+  const [plotType, setPlotType] = useState<'v' | 'tau'>('v');
 
   useEffect(() => {
     // Load and parse CSV data
@@ -68,9 +68,9 @@ const BoundaryLayerAnalysis = () => {
 
   // Helper to format numbers for filenames
   const formatNumber = (num: number) => {
-    if (num === 5e-5) return '5e-05';
-    if (num === 1e-4) return '1e-04';
-    if (num === 2e-4) return '2e-04';
+    if (num === 1e-7) return '1e-07';
+    if (num === 1e-6) return '1e-06';
+    if (num === 1.5e-5) return '2e-05';  // Changed to match the actual file naming
     return num.toString().replace('.', '');
   };
 
@@ -94,7 +94,17 @@ const BoundaryLayerAnalysis = () => {
     if (plotType === 'v') {
       return `/Blasius_Plots/v_nu${formatNumber(selectedNu)}_U${formatU(selectedUInf)}.png`;
     } else {
-      return `/Blasius_Plots/Cf_nu${formatNumber(selectedNu)}_U${formatU(selectedUInf)}.png`;
+      return `/Blasius_Plots/tau_nu${formatNumber(selectedNu)}_U${formatU(selectedUInf)}.png`;
+    }
+  };
+
+  // Get fluid name based on nu value
+  const getFluidName = (nu: number) => {
+    switch(nu) {
+      case 1e-7: return 'Mercury';
+      case 1e-6: return 'Water';
+      case 1.5e-5: return 'Air';
+      default: return '';
     }
   };
 
@@ -121,15 +131,18 @@ const BoundaryLayerAnalysis = () => {
             </div>
             <div className="mt-4 w-full">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                X Location: {selectedX}
+                X Location: {selectedX} m
               </label>
               <input
                 type="range"
-                value={selectedX}
-                onChange={e => setSelectedX(Number(e.target.value))}
-                min={x_locs[0]}
-                max={x_locs[2]}
-                step={x_locs[1] - x_locs[0]}
+                value={x_locs.indexOf(selectedX)}
+                onChange={e => {
+                  const index = Number(e.target.value);
+                  setSelectedX(x_locs[index]);
+                }}
+                min={0}
+                max={x_locs.length - 1}
+                step={1}
                 className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
               />
               <div className="flex justify-between text-xs text-gray-500 mt-1">
@@ -138,12 +151,12 @@ const BoundaryLayerAnalysis = () => {
             </div>
           </div>
 
-          {/* Right Section - v vs x or Cf */}
+          {/* Right Section - v vs x or Wall Shear Stress */}
           <div className="bg-white rounded-lg shadow-xl p-4">
             <div className="w-full h-[400px] flex items-center justify-center mb-4">
               <img 
                 src={getRightPlotPath()} 
-                alt={plotType === 'v' ? 'V vs X' : 'Cf'}
+                alt={plotType === 'v' ? 'V vs X' : 'Wall Shear Stress'}
                 className="w-full h-full object-contain border"
                 onError={e => (e.currentTarget.style.opacity = '0.2')}
               />
@@ -156,7 +169,7 @@ const BoundaryLayerAnalysis = () => {
                 size="large"
               >
                 <Radio.Button value="v">V vs X</Radio.Button>
-                <Radio.Button value="Cf">Cf</Radio.Button>
+                <Radio.Button value="tau">Wall Shear Stress</Radio.Button>
               </Radio.Group>
             </div>
           </div>
@@ -168,7 +181,7 @@ const BoundaryLayerAnalysis = () => {
             <div className="flex items-center gap-4">
               <div className="flex-1">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Kinematic Viscosity (ν): {selectedNu}
+                  Fluid: {getFluidName(selectedNu)} (ν = {selectedNu.toExponential(2)} m²/s)
                 </label>
                 <input
                   type="range"
@@ -183,14 +196,14 @@ const BoundaryLayerAnalysis = () => {
                   className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
                 />
                 <div className="flex justify-between text-xs text-gray-500 mt-1">
-                  {nu_vals.map(val => <span key={val}>{val}</span>)}
+                  {nu_vals.map(val => <span key={val}>{getFluidName(val)}</span>)}
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-4">
               <div className="flex-1">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Free Stream Velocity (U∞): {selectedUInf}
+                  Free Stream Velocity (U∞): {selectedUInf} m/s
                 </label>
                 <input
                   type="range"
@@ -210,7 +223,7 @@ const BoundaryLayerAnalysis = () => {
           <div className="bg-gray-50 rounded-lg p-6 shadow">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Additional Information</h3>
             <p className="text-gray-600">
-              This simulation shows the development of a boundary layer over a flat plate. Adjust the parameters to see how different conditions affect the flow.
+              This simulation shows the development of a boundary layer over a flat plate. The analysis includes velocity profiles, wall shear stress, and transverse velocity components for different fluids (Mercury, Water, and Air) at various free stream velocities.
             </p>
           </div>
         </div>
