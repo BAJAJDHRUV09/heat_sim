@@ -119,18 +119,18 @@ const BoundaryLayerAnalysis = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Left Section - Velocity Profile */}
-          <div className="bg-white rounded-lg shadow-xl p-4 flex flex-col items-center">
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">u vs y at x</h2>
+          <div className="bg-white rounded-lg shadow-xl p-2 flex flex-col items-center">
+            <h2 className="text-lg font-semibold text-gray-900 mb-1">u vs y at x</h2>
             <div className="w-full flex-1 flex items-center justify-center">
               <img 
                 src={getLeftPlotPath()} 
                 alt="u vs y profile"
-                className="w-full h-auto max-h-[350px] object-contain border"
+                className="w-full h-auto max-h-[450px] object-contain"
                 onError={e => (e.currentTarget.style.opacity = '0.2')}
               />
             </div>
-            <div className="mt-4 w-full">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="mt-2 w-full">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 X Location: {selectedX} m
               </label>
               <input
@@ -152,12 +152,12 @@ const BoundaryLayerAnalysis = () => {
           </div>
 
           {/* Right Section - v vs x or Wall Shear Stress */}
-          <div className="bg-white rounded-lg shadow-xl p-4">
-            <div className="w-full h-[400px] flex items-center justify-center mb-4">
+          <div className="bg-white rounded-lg shadow-xl p-2">
+            <div className="w-full h-[450px] flex items-center justify-center mb-2">
               <img 
                 src={getRightPlotPath()} 
                 alt={plotType === 'v' ? 'V vs X' : 'Wall Shear Stress'}
-                className="w-full h-full object-contain border"
+                className="w-full h-full object-contain"
                 onError={e => (e.currentTarget.style.opacity = '0.2')}
               />
             </div>
@@ -176,11 +176,11 @@ const BoundaryLayerAnalysis = () => {
         </div>
 
         {/* Common sliders for nu and U_inf */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-10">
-          <div className="bg-gray-50 rounded-lg p-6 shadow flex flex-col gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+          <div className="bg-gray-50 rounded-lg p-4 shadow flex flex-col gap-4">
             <div className="flex items-center gap-4">
               <div className="flex-1">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Fluid: {getFluidName(selectedNu)} (ν = {selectedNu.toExponential(2)} m²/s)
                 </label>
                 <input
@@ -202,7 +202,7 @@ const BoundaryLayerAnalysis = () => {
             </div>
             <div className="flex items-center gap-4">
               <div className="flex-1">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Free Stream Velocity (U∞): {selectedUInf} m/s
                 </label>
                 <input
@@ -220,7 +220,7 @@ const BoundaryLayerAnalysis = () => {
               </div>
             </div>
           </div>
-          <div className="bg-gray-50 rounded-lg p-6 shadow">
+          <div className="bg-gray-50 rounded-lg p-4 shadow">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Additional Information</h3>
             <p className="text-gray-600">
               This simulation shows the development of a boundary layer over a flat plate. The analysis includes velocity profiles, wall shear stress, and transverse velocity components for different fluids (Mercury, Water, and Air) at various free stream velocities.
