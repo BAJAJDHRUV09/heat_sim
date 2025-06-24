@@ -125,7 +125,7 @@ const BoundaryLayerAnalysis = () => {
               <img 
                 src={getLeftPlotPath()} 
                 alt="u vs y profile"
-                className="w-full h-auto max-h-[450px] object-contain"
+                className="w-full h-full object-contain"
                 onError={e => (e.currentTarget.style.opacity = '0.2')}
               />
             </div>

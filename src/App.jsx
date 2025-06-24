@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import * as d3 from 'd3';
+import LinearTransformation from './pages/LinearTransformation';
 
 function BoundaryLayerSimulation({ onBack }) {
   // State variables for dynamically loaded values
@@ -629,6 +630,20 @@ function HomePage({ onSelectSimulation }) {
           </div>
         </div>
         
+        <div 
+          className="bg-[#ffffff] rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+          onClick={() => onSelectSimulation('linear-transformation')}
+        >
+          <div className="p-6">
+            <h2 className="text-xl font-semibold mb-2 text-[#007bff]">Linear Transformation</h2>
+            <p className="text-[#333333] mb-4">Visualize 2D linear transformations with interactive matrix operations.</p>
+            <div className="flex items-center text-[#007bff]">
+              <span className="font-medium">Click to View</span>
+              <span className="ml-2 w-2 h-2 bg-[#007bff] rounded-full"></span>
+            </div>
+          </div>
+        </div>
+        
         <div className="bg-[#e0e0e0] rounded-xl shadow-md overflow-hidden opacity-50"> {/* Disabled card with light grey background */}
           <div className="p-6 text-[#666666]"> {/* Medium grey text */}
             <h2 className="text-xl font-semibold mb-2">Coming Soon</h2>
@@ -664,6 +679,8 @@ function App() {
     <div className="min-h-screen bg-[#f0f0f0]"> {/* Main app container with light grey background */}
       {activeSimulation === 'boundary-layer' ? (
         <BoundaryLayerSimulation onBack={() => window.history.back()} /> // Use history.back for going back
+      ) : activeSimulation === 'linear-transformation' ? (
+        <LinearTransformation />
       ) : (
         <HomePage onSelectSimulation={handleSelectSimulation} />
       )}
