@@ -58,6 +58,23 @@ const Home = () => {
           <Card
             hoverable
             className="transform transition-all duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer bg-white border-0 rounded-xl overflow-hidden"
+            onClick={() => handleCardClick('/natural-convection')}
+            bodyStyle={{ padding: '2rem' }}
+          >
+            <div className="flex flex-col items-center text-center">
+              <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Natural Convection Analysis</h3>
+              <p className="text-gray-600">Explore natural convection over a vertical plate with different Prandtl numbers</p>
+            </div>
+          </Card>
+
+          <Card
+            hoverable
+            className="transform transition-all duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer bg-white border-0 rounded-xl overflow-hidden"
             onClick={() => handleCardClick('/fourier-modes')}
             bodyStyle={{ padding: '2rem' }}
           >
@@ -120,6 +137,23 @@ const Home = () => {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Startup Shear Flow</h3>
               <p className="text-gray-600">Visualize startup of shear flow in different fluids with time evolution</p>
+            </div>
+          </Card>
+
+          <Card
+            hoverable
+            className="transform transition-all duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer bg-white border-0 rounded-xl overflow-hidden"
+            onClick={() => handleCardClick('/pulsatile-flow')}
+            bodyStyle={{ padding: '2rem' }}
+          >
+            <div className="flex flex-col items-center text-center">
+              <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Pulsatile Flow</h3>
+              <p className="text-gray-600">Interactive visualization of pulsatile flow with adjustable density, viscosity, radius, and time</p>
             </div>
           </Card>
         </div>

@@ -31,42 +31,48 @@ const VectorFieldDivergence = () => {
       description: 'Arrows point toward origin',
       function: (x, y) => [-x, -y],
       color: '#ef4444',
-      formula: 'F(x,y) = (-x, -y)'
+      formula: 'F(x,y) = (-x, -y)',
+      divergence: -2
     },
     'diverging': {
       name: 'Diverging Field',
       description: 'Arrows point away from origin',
       function: (x, y) => [x, y],
       color: '#10b981',
-      formula: 'F(x,y) = (x, y)'
+      formula: 'F(x,y) = (x, y)',
+      divergence: 2
     },
     'saddle': {
       name: 'Saddle Point',
       description: 'Mixed convergence/divergence',
       function: (x, y) => [x, -y],
       color: '#f59e0b',
-      formula: 'F(x,y) = (x, -y)'
+      formula: 'F(x,y) = (x, -y)',
+      divergence: 0
     },
     'rotational': {
       name: 'Rotational Field',
       description: 'Arrows rotate around origin',
       function: (x, y) => [-y, x],
       color: '#3b82f6',
-      formula: 'F(x,y) = (-y, x)'
+      formula: 'F(x,y) = (-y, x)',
+      divergence: 0
     },
     'spiral_in': {
       name: 'Spiral In',
       description: 'Arrows spiral toward origin',
       function: (x, y) => [-x - y, x - y],
       color: '#8b5cf6',
-      formula: 'F(x,y) = (-x-y, x-y)'
+      formula: 'F(x,y) = (-x-y, x-y)',
+      divergence: -2
     },
     'spiral_out': {
       name: 'Spiral Out',
       description: 'Arrows spiral away from origin',
       function: (x, y) => [x - y, x + y],
       color: '#ec4899',
-      formula: 'F(x,y) = (x-y, x+y)'
+      formula: 'F(x,y) = (x-y, x+y)',
+      divergence: 2
     }
   };
 
@@ -308,6 +314,20 @@ const VectorFieldDivergence = () => {
                     </Text>
                     <Text className="text-sm">
                       • <span className="font-semibold text-blue-500">Blue:</span> Rotational (zero divergence)
+                    </Text>
+                  </div>
+                  
+                  <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <Text strong className="text-sm text-gray-700 mb-1 block">
+                      Numerical Divergence Value:
+                    </Text>
+                    <Text className="font-mono text-xl font-bold text-blue-600">
+                      ∇ · F = {vectorFields[selectedField].divergence}
+                    </Text>
+                    <Text className="text-xs text-gray-500 mt-1 block">
+                      {vectorFields[selectedField].divergence > 0 ? 'Positive divergence (source)' : 
+                       vectorFields[selectedField].divergence < 0 ? 'Negative divergence (sink)' : 
+                       'Zero divergence (solenoidal)'}
                     </Text>
                   </div>
                 </div>

@@ -46,7 +46,7 @@ const FourierModes: React.FC = () => {
             This visualization shows the evolution of temperature profiles using exact analytical solutions. The cooling profiles demonstrate how different cumulative modes contribute to the overall temperature distribution over time. The simulation tracks the temperature evolution from t=0.010 to t=1.000 for different Biot numbers (0.1, 5.0, 10.0) representing different boundary conditions. Individual mode (1) and cumulative sums (1-2, 1-3, 1-10) are available.
           </p>
         </div>
-        
+      
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Left Section - Cooling Profile */}
           <div className="bg-white rounded-lg shadow-xl p-2 flex flex-col items-center h-full">
@@ -155,8 +155,8 @@ const FourierModes: React.FC = () => {
               <Text>Time: {currentTime.toFixed(3)}</Text><br />
               <Text>Mode: {getModeDisplayName(selectedMode)}</Text><br />
               <Text>Biot Number (Bi): {currentBiot.toFixed(1)}</Text>
+              </div>
             </div>
-          </div>
         </div>
       </div>
     </div>
