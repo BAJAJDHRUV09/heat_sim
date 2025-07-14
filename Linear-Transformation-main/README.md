@@ -1,18 +1,34 @@
-# Linear Transformation Visualizer #
+# Linear Transformation Visualizer
 
-Designed to be the best friend of linear algebra newcomers.
-Try it yourself: https://volodymyrvakhniuk.github.io/Linear-Transformation
- 
-## Project Description ##
-The goal of the project is to enhance the visual understanding of *linear transformations* - a fundamental linear algebra concept. The user has to input the necessary information (basis vectors and matrix), hit the play button and will immediately see the animation of the *linear transformation*. The project was created for the SoME1 (Summer of Math Exposition) event launched by Grant Sanderson in August 2020. I created this project together with my friend. My responsibilities:
- 1) visualization engine using p5.js.
- 2) visualization engine API using Javascript. In order to “communicate” with the rest of the program.
- 3) Brief instructions on using the project.
- 4) Supplementary math articles.
+This is a minimal interactive tool for visualizing the effect of changing the basis in 2D linear algebra.
 
-## Tools Used ## 
- 1) HTML 
- 1) CSS
- 2) Javascript
- 4) p5.js
+## Features (Current Version)
+- Input two basis vectors (as 2D column vectors).
+- See the effect of the basis change on the main figure/canvas in real time.
+- No matrix input, no extra vector input, no configuration checkboxes, and no animation controls.
+- Clean, focused UI for educational use.
+
+## Usage
+1. Enter your two basis vectors in the input fields on the right.
+2. The main figure will update to show the new basis.
+3. No other controls are present.
+
+## Technologies Used
+- HTML, CSS, JavaScript
+- p5.js for visualization
+- Bootstrap for layout
+
+## How to Run
+- Place the folder in a static web server or in the `public` directory of a React/Vite app.
+- Open `index.html` in your browser, or visit the corresponding route in your app.
+
+---
+
+# Documentation for Each Page
+
+See the following files for documentation on each main visualization page:
+- `../README.md` (project root): General project setup and boundary layer visualization
+- `../src/pages/VectorFieldDivergence.md`: Divergence Explorer documentation
+- `../src/pages/PulsatileFlow.md`: Pulsatile Flow documentation
+- `../src/pages/LinearTransformation.md`: Linear Transformation (React wrapper) documentation
 
