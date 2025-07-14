@@ -1,0 +1,92 @@
+* {
+    font-family: 'Comfortaa', cursive;
+}
+
+html body .main-steps {
+    padding-right: 50px;
+}
+
+.main-steps_list {
+    font-size: 1em;
+    padding-right: 30px;
+}
+
+.w-600 {
+    font-weight: 600;
+}
+
+h1 {
+    font-weight: 600;
+}
+
+/* Matrix */
+.matrix-cell {
+    width: 25px;
+}
+
+/* Number input arrow hide */
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.matrix {
+    position: relative;
+    display: inline-block;
+    top: 18px;
+}
+.matrix:before, .matrix:after {
+    content: "";
+    position: absolute;
+    top: -1px;
+    border: 2px solid #000;
+    width: 6px;
+    height: 105%;
+}
+.matrix:before {
+    left: -8px;
+    border-right: 0;
+}
+.matrix:after {
+    right: -8px;
+    border-left: 0;
+}
+
+.matrix input {
+    text-align: center;
+}
+
+.matrix input:focus {
+    outline: none;
+}
+
+span.text-with-matrix {
+    line-height: 42px;
+    padding: 5px;
+}
+
+.controlBtn {
+    transition: all 0.3s ease;
+    transform: rotate(0deg);
+    position: relative;
+    top: 5px;
+}
+
+.rotate180 {
+    transform: rotate(180deg);
+}
+
+.opacity0 {
+    opacity: 0;
+}
+
+.displayNone {
+    display: none;
+}

@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D Vector Field Divergence Explorer</title>
+<style>
+    body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background-color: #f4f7f6;
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 10px;
+        min-height: 100vh;
+        box-sizing: border-box;
+    }
+    #app-container {
+        width: 100%;
+        max-width: 900px; 
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    #controls-panel {
+        padding: 15px;
+        background-color: #e9ecef;
+        border-bottom: 1px solid #dee2e6;
+    }
+    .control-group {
+        margin-bottom: 10px;
+    }
+    .control-group:last-child {
+        margin-bottom: 0;
+    }
+    .control-group legend {
+        font-weight: bold;
+        margin-bottom: 5px;
+        font-size: 0.9em;
+        color: #495057;
+    }
+    .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    button {
+        padding: 8px 12px;
+        font-size: 0.9em;
+        border: 1px solid #adb5bd;
+        background-color: #f8f9fa;
+        color: #343a40;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    button:hover {
+        background-color: #e9ecef;
+        border-color: #6c757d;
+    }
+    button:active, button.active {
+        background-color: #007bff;
+        color: white;
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    }
+    #canvas-container {
+        position: relative;
+        width: 100%;
+    }
+    #vector-canvas {
+        display: block;
+        width: 100%;
+        background-color: #ffffff;
+        cursor: crosshair;
+    }
+    #divergence-tooltip {
+        position: fixed; /* Relative to viewport for easier positioning */
+        display: none;
+        padding: 5px 8px;
+        background: rgba(0,0,0,0.75);
+        color: white;
+        border-radius: 3px;
+        font-size: 0.85em;
+        pointer-events: none; 
+        white-space: nowrap;
+        z-index: 1000;
+    }
+    #info-panel {
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-top: 1px solid #dee2e6;
+    }
+    #info-panel h3 {
+        margin-top: 0;
+        margin-bottom: 8px;
+        font-size: 1.1em;
+        color: #007bff;
+    }
+    #info-panel p, #info-panel ul {
+        font-size: 0.9em;
+        line-height: 1.6;
+        margin-bottom: 10px;
+    }
+    #info-panel ul {
+        padding-left: 20px;
+    }
+    @media (max-width: 600px) {
+        body { padding: 0; }
+        #app-container { border-radius: 0; }
+        button { font-size: 0.85em; padding: 6px 10px; }
+        .control-group legend { font-size: 0.85em; }
+        #info-panel p, #info-panel ul { font-size: 0.85em; }
+    }
+</style>
+</head>
+<body>
+    <div id="app-container">
+        <div id="controls-panel">
+            <div class="control-group">
+                <legend>Mode</legend>
+                <div class="button-row">
+                    <button id="paint-mode-btn" class="active">Paint Vectors</button>
+                    <button id="div-mode-btn">Show Divergence</button>
+                </div>
+            </div>
+            <div class="control-group">
+                <legend>Sample Vector Fields</legend>
+                <div class="button-row">
+                    <button id="sample-source-btn">Source</button>
+                    <button id="sample-sink-btn">Sink</button>
+                    <button id="sample-source-sink-btn">Source & Sink</button>
+                    <button id="sample-uniform-btn">Uniform</button>
+                    <button id="sample-rotation-btn">Rotation (Zero Div)</button>
+                </div>
+            </div>
+             <div class="control-group">
+                <legend>Canvas Actions</legend>
+                <div class="button-row">
+                    <button id="clear-field-btn">Clear Field</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="canvas-container">
+            <canvas id="vector-canvas"></canvas>
+            <div id="divergence-tooltip"></div>
+        </div>
+
+        <div id="info-panel">
+            <div id="instructions">
+                <h3>How to Use</h3>
+                <p>
+                    1. <strong>Select a Mode:</strong>
+                        <ul>
+                            <li><strong>Paint Vectors:</strong> Click and drag on the grid to draw a vector. The vector starts at the center of the cell you first click, and its direction/magnitude are determined by how far you drag.</li>
+                            <li><strong>Show Divergence:</strong> Move your mouse over the grid. A colored circle and a tooltip will show the calculated divergence at the cursor's location.</li>
+                        </ul>
+                    2. <strong>Explore Samples:</strong> Use the "Sample Vector Fields" buttons to load predefined patterns.
+                    3. <strong>Clear:</strong> The "Clear Field" button resets all vectors to zero.
+                </p>
+            </div>
+            <div id="vector-field-def">
+                <h3>What is a Vector Field?</h3>
+                <p>A vector field is a space where every point has a vector (an arrow with direction and magnitude) associated with it. In 2D, like on this grid, it means at any location (x,y), there's a specific arrow. Imagine it like wind patterns on a map, where each point shows wind speed and direction, or the flow of water in a river.</p>
+            </div>
+            <div id="divergence-def">
+                <h3>What is Divergence (in Fluid Flow)?</h3>
+                <p>Divergence measures how much a vector field is "spreading out" (diverging) or "concentrating" (converging) at a given point. If we imagine the vector field represents the flow of a fluid:</p>
+                <ul>
+                    <li><strong>Positive Divergence (Source):</strong> Fluid is flowing outwards from this point, like from a spring or a tap. The area acts as a <strong>source</strong>. This will be shown with a <span style="color: red; font-weight:bold;">red</span> indicator.</li>
+                    <li><strong>Negative Divergence (Sink):</strong> Fluid is flowing inwards to this point, like into a drain. The area acts as a <strong>sink</strong>. This will be shown with a <span style="color: blue; font-weight:bold;">blue</span> indicator.</li>
+                    <li><strong>Zero Divergence:</strong> The amount of fluid entering a tiny region around the point equals the amount leaving. The flow might be straight, or rotating, but not accumulating or depleting. This will be shown with a <span style="color: green; font-weight:bold;">green</span> or small gray/transparent indicator.</li>
+                </ul>
+                <p>Mathematically, for a 2D vector field F = (P(x,y), Q(x,y)), divergence is: div F = ∂P/∂x + ∂Q/∂y. This app approximates these partial derivatives using values from neighboring cells.</p>
+            </div>
+        </div>
+    </div>
+
+<script>
+const app = {
+    config: {
+        cellSize: 38, // Increased from 25 for more spacing
+        arrowDisplayScaleFactor: 0.9,
+        vectorMagnitudeDrawingCap: 1.5, 
+        divergenceIndicator: {
+            baseRadius: 3, 
+            scaleRadius: 15,
+            maxAbsDivForScaling: 1.0 
+        },
+        gridLineColor: '#e0e0e0',
+        vectorColor: '#333333',
+        tempVectorColor: '#007bff',
+    },
+
+    state: {
+        canvas: null,
+        ctx: null,
+        numCols: 0,
+        numRows: 0,
+        gridVectors: [],
+        currentMode: 'paint',
+        isPainting: false,
+        paintStartCell: { r: 0, c: 0 },
+        paintStartPixel: { x: 0, y: 0 },
+        currentMouseCanvasPos: { x: 0, y: 0 },
+        currentMouseGlobalPos: {x: 0, y: 0}, // For tooltip positioning
+        divergenceTooltip: null,
+        modeButtons: {},
+        boundDocumentTouchMove: null, // Added for robust touch handling
+        boundDocumentTouchEnd: null,  // Added for robust touch handling
+    },
+
+    init() {
+        this.state.canvas = document.getElementById('vector-canvas');
+        this.state.ctx = this.state.canvas.getContext('2d');
+        this.state.divergenceTooltip = document.getElementById('divergence-tooltip');
+
+        this.state.modeButtons.paint = document.getElementById('paint-mode-btn');
+        this.state.modeButtons.divergence = document.getElementById('div-mode-btn');
+        
+        this.setupEventListeners();
+        this.resizeCanvas(); 
+        this.setMode('paint'); // Initialize with paint mode active
+        window.addEventListener('resize', () => this.resizeCanvas());
+    },
+
+    setActiveButton(mode) {
+        if (this.state.modeButtons.paint) this.state.modeButtons.paint.classList.remove('active');
+        if (this.state.modeButtons.divergence) this.state.modeButtons.divergence.classList.remove('active');
+        
+        if (mode === 'paint' && this.state.modeButtons.paint) {
+            this.state.modeButtons.paint.classList.add('active');
+        } else if (mode === 'divergence' && this.state.modeButtons.divergence) {
+            this.state.modeButtons.divergence.classList.add('active');
+        }
+    },
+
+    setupEventListeners() {
+        this.state.modeButtons.paint.addEventListener('click', () => this.setMode('paint'));
+        this.state.modeButtons.divergence.addEventListener('click', () => this.setMode('divergence'));
+
+        document.getElementById('sample-source-btn').addEventListener('click', () => this.loadSampleField('source'));
+        document.getElementById('sample-sink-btn').addEventListener('click', () => this.loadSampleField('sink'));
+        document.getElementById('sample-source-sink-btn').addEventListener('click', () => this.loadSampleField('source_sink'));
+        document.getElementById('sample-uniform-btn').addEventListener('click', () => this.loadSampleField('uniform'));
+        document.getElementById('sample-rotation-btn').addEventListener('click', () => this.loadSampleField('rotation'));
+        
+        document.getElementById('clear-field-btn').addEventListener('click', () => {
+            this.initGridData();
+            this.draw();
+        });
+
+        this.state.canvas.addEventListener('mousedown', (e) => this.handleMouseDown(e));
+        this.state.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+        document.addEventListener('mouseup', (e) => this.handleMouseUp(e)); // Listen on document for mouseup
+        this.state.canvas.addEventListener('mouseleave', (e) => this.handleMouseLeave(e));
+        
+        this.state.canvas.addEventListener('touchstart', this.handleCanvasTouchStart.bind(this), {passive: false});
+    },
+
+    resizeCanvas() {
+        const canvas = this.state.canvas;
+        const container = document.getElementById('canvas-container');
+        
+        const oldNumCols = this.state.numCols;
+        const oldNumRows = this.state.numRows;
+
+        canvas.width = container.clientWidth;
+        canvas.height = Math.max(300, Math.min(container.clientWidth * 0.75, window.innerHeight * 0.5));
+        
+        this.state.numCols = Math.floor(canvas.width / this.config.cellSize);
+        this.state.numRows = Math.floor(canvas.height / this.config.cellSize);
+
+        canvas.width = this.state.numCols * this.config.cellSize;
+        canvas.height = this.state.numRows * this.config.cellSize;
+        
+        if (this.state.numCols < 1 || this.state.numRows < 1) {
+             console.warn("Canvas or cell size resulted in zero columns/rows.");
+             return; // Avoid errors if grid is impossible
+        }
+        // If grid size changed, re-initialize data. Otherwise, try to preserve it (more complex)
+        // For simplicity, just re-init. User can reload samples if desired.
+        // if (oldNumCols !== this.state.numCols || oldNumRows !== this.state.numRows) {
+            this.initGridData();
+        // }
+        this.draw();
+    },
+
+    initGridData() {
+        this.state.gridVectors = [];
+        for (let r = 0; r < this.state.numRows; r++) {
+            const row = [];
+            for (let c = 0; c < this.state.numCols; c++) {
+                row.push({ vx: 0, vy: 0 });
+            }
+            this.state.gridVectors.push(row);
+        }
+    },
+
+    setMode(mode) {
+        this.state.currentMode = mode;
+        this.setActiveButton(mode);
+        if (mode === 'paint') {
+            this.state.divergenceTooltip.style.display = 'none';
+        }
+        this.draw();
+    },
+
+    getMousePosInCanvas(event) {
+        const rect = this.state.canvas.getBoundingClientRect();
+        return {
+            x: event.clientX - rect.left,
+            y: event.clientY - rect.top
+        };
+    },
+
+    handleMouseDown(event) {
+        if (this.state.currentMode !== 'paint') return;
+        
+        this.state.isPainting = true;
+        const mousePos = this.getMousePosInCanvas(event);
+        this.state.currentMouseCanvasPos = mousePos;
+        this.state.currentMouseGlobalPos = {x: event.clientX, y: event.clientY};
+
+
+        const c = Math.floor(mousePos.x / this.config.cellSize);
+        const r = Math.floor(mousePos.y / this.config.cellSize);
+
+        if (r >= 0 && r < this.state.numRows && c >= 0 && c < this.state.numCols) {
+            this.state.paintStartCell = { r, c };
+            this.state.paintStartPixel = { 
+                x: (c + 0.5) * this.config.cellSize, 
+                y: (r + 0.5) * this.config.cellSize 
+            };
+        } else {
+            this.state.isPainting = false; 
+        }
+        this.draw(); // To show temporary vector immediately if applicable
+    },
+
+    handleMouseMove(event) {
+        const mousePos = this.getMousePosInCanvas(event);
+        this.state.currentMouseCanvasPos = mousePos;
+        this.state.currentMouseGlobalPos = {x: event.clientX, y: event.clientY};
+
+        if (this.state.currentMode === 'paint' && this.state.isPainting) {
+            this.draw(); 
+        } else if (this.state.currentMode === 'divergence') {
+            this.draw(); 
+            this.updateDivergenceTooltip(this.state.currentMouseGlobalPos, mousePos);
+        }
+    },
+
+    handleMouseUp(event) {
+        if (this.state.currentMode !== 'paint' || !this.state.isPainting) {
+            // If not painting mode, or not currently painting, do nothing.
+            // This check is important because mouseup is now on document.
+            if(!this.state.isPainting && this.state.currentMode === 'paint') return;
+            // if mouse up outside canvas, we should still stop painting
+            if (this.state.isPainting) {
+                this.state.isPainting = false;
+                this.draw(); // Clear temporary vector
+            }
+            return;
+        }
+        
+        this.state.isPainting = false;
+        // mousePos here refers to canvas coordinates
+        const mousePos = this.state.currentMouseCanvasPos; // Use last known canvas position
+
+        const { r, c } = this.state.paintStartCell;
+        const startPixel = this.state.paintStartPixel;
+
+        const dx_pixel = mousePos.x - startPixel.x;
+        const dy_pixel = mousePos.y - startPixel.y;
+
+        const vx = dx_pixel / this.config.cellSize;
+        const vy = dy_pixel / this.config.cellSize;
+
+        if (r >= 0 && r < this.state.numRows && c >= 0 && c < this.state.numCols) {
+            this.state.gridVectors[r][c] = { vx, vy };
+        }
+        this.draw();
+    },
+    
+    handleMouseLeave(event) {
+        // If mouse leaves canvas while painting, we can either cancel or finalize.
+        // Current mouseup on document handles finalization.
+        // This is primarily for hiding divergence tooltip.
+        if (this.state.currentMode === 'divergence') {
+            this.state.divergenceTooltip.style.display = 'none';
+            this.state.currentMouseCanvasPos = {x: -1, y: -1}; // Mark mouse as outside
+            this.draw(); // Redraw to remove divergence indicator
+        }
+    },
+
+    updateDivergenceTooltip(globalMousePos, canvasMousePos) {
+        const c = Math.floor(canvasMousePos.x / this.config.cellSize);
+        const r = Math.floor(canvasMousePos.y / this.config.cellSize);
+
+        if (r >= 0 && r < this.state.numRows && c >= 0 && c < this.state.numCols) {
+            const div = this.calculateDivergence(r, c);
+            this.state.divergenceTooltip.style.display = 'block';
+            this.state.divergenceTooltip.innerHTML = `Divergence: ${div.toFixed(4)}`;
+            
+            let tipX = globalMousePos.x + 15;
+            let tipY = globalMousePos.y + 15;
+
+            if (tipX + this.state.divergenceTooltip.offsetWidth > window.innerWidth) {
+                tipX = globalMousePos.x - this.state.divergenceTooltip.offsetWidth - 15; 
+            }
+            if (tipY + this.state.divergenceTooltip.offsetHeight > window.innerHeight) {
+                tipY = globalMousePos.y - this.state.divergenceTooltip.offsetHeight - 15;
+            }
+
+            this.state.divergenceTooltip.style.left = `${tipX}px`;
+            this.state.divergenceTooltip.style.top = `${tipY}px`;
+        } else {
+            this.state.divergenceTooltip.style.display = 'none';
+        }
+    },
+
+    calculateDivergence(r, c) {
+        const { gridVectors, numRows, numCols } = this.state;
+        
+        const getVx = (row, col) => (row >= 0 && row < numRows && col >= 0 && col < numCols) ? gridVectors[row][col].vx : 0;
+        const getVy = (row, col) => (row >= 0 && row < numRows && col >= 0 && col < numCols) ? gridVectors[row][col].vy : 0;
+
+        const vx_plus_1 = getVx(r, c + 1);
+        const vx_minus_1 = getVx(r, c - 1);
+        const vy_plus_1 = getVy(r + 1, c);
+        const vy_minus_1 = getVy(r - 1, c);
+        
+        const dVx_dx = (vx_plus_1 - vx_minus_1) / 2; 
+        const dVy_dy = (vy_plus_1 - vy_minus_1) / 2;
+
+        return dVx_dx + dVy_dy;
+    },
+
+    draw() {
+        if (!this.state.ctx) return; // Canvas not ready
+        const { ctx, canvas, numRows, numCols, gridVectors } = this.state;
+        const { cellSize } = this.config;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        this.drawGrid();
+
+        for (let r = 0; r < numRows; r++) {
+            for (let c = 0; c < numCols; c++) {
+                const { vx, vy } = gridVectors[r][c];
+                if (vx !== 0 || vy !== 0) {
+                    this.drawVector(r, c, vx, vy);
+                }
+            }
+        }
+
+        if (this.state.currentMode === 'paint' && this.state.isPainting) {
+            this.drawTemporaryVector();
+        } else if (this.state.currentMode === 'divergence') {
+            const mc = Math.floor(this.state.currentMouseCanvasPos.x / cellSize);
+            const mr = Math.floor(this.state.currentMouseCanvasPos.y / cellSize);
+            if (mr >= 0 && mr < numRows && mc >= 0 && mc < numCols) {
+                 this.drawDivergenceIndicator(mr, mc);
+            }
+        }
+    },
+
+    drawGrid() {
+        const { ctx, numRows, numCols } = this.state;
+        const { cellSize, gridLineColor } = this.config;
+        ctx.strokeStyle = gridLineColor;
+        ctx.lineWidth = 0.5; // Make grid lines thinner
+
+        for (let r = 0; r <= numRows; r++) {
+            ctx.beginPath();
+            ctx.moveTo(0, r * cellSize);
+            ctx.lineTo(numCols * cellSize, r * cellSize);
+            ctx.stroke();
+        }
+        for (let c = 0; c <= numCols; c++) {
+            ctx.beginPath();
+            ctx.moveTo(c * cellSize, 0);
+            ctx.lineTo(c * cellSize, numRows * cellSize);
+            ctx.stroke();
+        }
+    },
+
+    drawVector(r, c, vx, vy, color = this.config.vectorColor) {
+        const { ctx } = this.state;
+        const { cellSize, arrowDisplayScaleFactor, vectorMagnitudeDrawingCap } = this.config;
+
+        const startX = (c + 0.5) * cellSize;
+        const startY = (r + 0.5) * cellSize;
+
+        let mag = Math.sqrt(vx * vx + vy * vy);
+        if (mag < 0.01) { 
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(startX, startY, 1.5, 0, 2 * Math.PI);
+            ctx.fill();
+            return;
+        }
+
+        const displayMag = Math.min(mag, vectorMagnitudeDrawingCap);
+        
+        const nx = vx / mag; // Normalized direction components
+        const ny = vy / mag;
+
+        const arrowLength = displayMag * cellSize * arrowDisplayScaleFactor;
+
+        const endX = startX + nx * arrowLength;
+        const endY = startY + ny * arrowLength;
+
+        this.drawArrow(startX, startY, endX, endY, color);
+    },
+    
+    drawArrow(fromX, fromY, toX, toY, color, headSize = Math.max(5, this.config.cellSize * 0.2) ) {
+        const { ctx } = this.state;
+        const dx = toX - fromX;
+        const dy = toY - fromY;
+        if (Math.abs(dx) < 0.01 && Math.abs(dy) < 0.01) return; // Avoid issues with zero length vectors for angle calc
+        const angle = Math.atan2(dy, dx);
+        
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+        ctx.lineWidth = Math.max(1, this.config.cellSize * 0.05);
+
+        ctx.beginPath();
+        ctx.moveTo(fromX, fromY);
+        ctx.lineTo(toX, toY);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(toX, toY);
+        ctx.lineTo(toX - headSize * Math.cos(angle - Math.PI / 6), toY - headSize * Math.sin(angle - Math.PI / 6));
+        ctx.lineTo(toX - headSize * Math.cos(angle + Math.PI / 6), toY - headSize * Math.sin(angle + Math.PI / 6));
+        ctx.closePath();
+        ctx.fill();
+    },
+
+    drawTemporaryVector() {
+        const startPixel = this.state.paintStartPixel;
+        const currentPixel = this.state.currentMouseCanvasPos;
+        // Only draw if currentPixel is valid (e.g., mouse is over canvas)
+        if (currentPixel.x === undefined || currentPixel.x < 0) return;
+        this.drawArrow(startPixel.x, startPixel.y, currentPixel.x, currentPixel.y, this.config.tempVectorColor);
+    },
+
+    drawDivergenceIndicator(r, c) {
+        const { ctx } = this.state;
+        const { cellSize, divergenceIndicator } = this.config;
+        const div = this.calculateDivergence(r, c);
+
+        const centerX = (c + 0.5) * cellSize;
+        const centerY = (r + 0.5) * cellSize;
+
+        let normDiv = div / divergenceIndicator.maxAbsDivForScaling;
+        normDiv = Math.max(-1, Math.min(1, normDiv)); 
+
+        let R=0, G=0, B=0; // Default to black if something is wrong
+        let alpha = 0.1 + 0.6 * Math.abs(normDiv); // Base alpha + scaled alpha
+
+        if (normDiv > 0.05) { // Positive divergence (source) - Red
+            R = 255; G = Math.floor(200 * (1 - normDiv)); B = Math.floor(200 * (1 - normDiv));
+        } else if (normDiv < -0.05) { // Negative divergence (sink) - Blue
+            B = 255; R = Math.floor(200 * (1 + normDiv)); G = Math.floor(200 * (1 + normDiv));
+        } else { // Near zero - Green
+            G = 128; R = B = Math.floor(100 * Math.abs(normDiv/0.05)); // Fade green to grayish
+            alpha = 0.1 + 0.4 * (Math.abs(normDiv) / 0.05); // Make near-zero less opaque
+        }
+        
+        const color = `rgba(${R}, ${G}, ${B}, ${alpha})`;
+        const radius = divergenceIndicator.baseRadius + Math.abs(normDiv) * divergenceIndicator.scaleRadius;
+
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+        ctx.fill();
+    },
+
+    loadSampleField(type) {
+        this.initGridData(); 
+        const { gridVectors, numRows, numCols } = this.state;
+        const cX = (numCols -1) / 2.0; // Center X index
+        const cY = (numRows -1) / 2.0; // Center Y index
+        const baseStrength = 1.0; 
+
+        for (let r = 0; r < numRows; r++) {
+            for (let c = 0; c < numCols; c++) {
+                const dr_norm = (r - cY) / (numRows/2.0); // Normalized displacement from center row
+                const dc_norm = (c - cX) / (numCols/2.0); // Normalized displacement from center col
+                let vx = 0, vy = 0;
+
+                switch (type) {
+                    case 'source':
+                        const mag_s = Math.sqrt(dc_norm * dc_norm + dr_norm * dr_norm) || 1e-5;
+                        vx = (dc_norm / mag_s) * baseStrength;
+                        vy = (dr_norm / mag_s) * baseStrength;
+                        break;
+                    case 'sink':
+                        const mag_k = Math.sqrt(dc_norm * dc_norm + dr_norm * dr_norm) || 1e-5;
+                        vx = -(dc_norm / mag_k) * baseStrength;
+                        vy = -(dr_norm / mag_k) * baseStrength;
+                        break;
+                    case 'source_sink': 
+                        const srcX_norm = -0.5, srcY_norm = 0; // Source at left-center
+                        const snkX_norm = 0.5,  snkY_norm = 0; // Sink at right-center
+                        
+                        const dr1 = dr_norm - srcY_norm, dc1 = dc_norm - srcX_norm;
+                        const mag1 = Math.sqrt(dc1*dc1 + dr1*dr1) || 1e-5;
+                        const vx1 = (dc1/mag1) * baseStrength;
+                        const vy1 = (dr1/mag1) * baseStrength;
+
+                        const dr2 = dr_norm - snkY_norm, dc2 = dc_norm - snkX_norm;
+                        const mag2 = Math.sqrt(dc2*dc2 + dr2*dr2) || 1e-5;
+                        const vx2 = -(dc2/mag2) * baseStrength; 
+                        const vy2 = -(dr2/mag2) * baseStrength;
+                        
+                        vx = vx1 + vx2;
+                        vy = vy1 + vy2;
+                        break;
+                    case 'uniform':
+                        vx = baseStrength * 0.7; 
+                        vy = baseStrength * 0.35;
+                        break;
+                    case 'rotation': 
+                        vx = -dr_norm * baseStrength;
+                        vy = dc_norm * baseStrength;
+                        break;
+                }
+                gridVectors[r][c] = { vx, vy };
+            }
+        }
+        this.draw();
+    },
+
+    // New methods for robust touch handling
+    handleCanvasTouchStart(event) {
+        event.preventDefault();
+        const touch = event.touches[0];
+        this.handleMouseDown(touch); // Call existing logic, sets isPainting
+
+        if (this.state.isPainting) {
+            this.state.boundDocumentTouchMove = this.handleDocumentTouchMove.bind(this);
+            this.state.boundDocumentTouchEnd = this.handleDocumentTouchEnd.bind(this);
+
+            document.addEventListener('touchmove', this.state.boundDocumentTouchMove, { passive: false });
+            document.addEventListener('touchend', this.state.boundDocumentTouchEnd, { passive: false });
+            document.addEventListener('touchcancel', this.state.boundDocumentTouchEnd, { passive: false });
+        }
+    },
+
+    handleDocumentTouchMove(event) {
+        event.preventDefault();
+        if (event.touches.length > 0) {
+            this.handleMouseMove(event.touches[0]);
+        }
+    },
+
+    handleDocumentTouchEnd(event) {
+        event.preventDefault(); // Consistent with other preventDefault calls
+        // Use changedTouches for touchend/touchcancel
+        const touch = event.changedTouches.length > 0 ? event.changedTouches[0] : null;
+        
+        // handleMouseUp will use its internal state (like currentMouseCanvasPos)
+        // and check this.state.isPainting.
+        this.handleMouseUp(touch); 
+
+        // Clean up document listeners
+        if (this.state.boundDocumentTouchMove) {
+            document.removeEventListener('touchmove', this.state.boundDocumentTouchMove);
+            this.state.boundDocumentTouchMove = null;
+        }
+        if (this.state.boundDocumentTouchEnd) {
+            document.removeEventListener('touchend', this.state.boundDocumentTouchEnd);
+            document.removeEventListener('touchcancel', this.state.boundDocumentTouchEnd);
+            this.state.boundDocumentTouchEnd = null;
+        }
+    },
+};
+
+window.onload = () => app.init();
+
+</script>
+</body>
+</html>
+ 

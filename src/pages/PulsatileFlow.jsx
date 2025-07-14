@@ -1,69 +1,49 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
-// Parameter options - updated to match new folder structure
-const densities = [1, 1000, 13500]; // kg/m^3 (air, water, mercury)
-const viscosities = [1e-5, 1e-3, 1e+0]; // Pa.s (low, medium, high)
-const densityLabels = ['Air', 'Water', 'Mercury'];
-const viscosityLabels = ['Low', 'Medium', 'High'];
-const timeSteps = [
-  { idx: 1, t: '0.000' },
-  { idx: 2, t: '0.056' },
-  { idx: 3, t: '0.111' },
-  { idx: 4, t: '0.167' },
-  { idx: 5, t: '0.222' },
-  { idx: 6, t: '0.278' },
-  { idx: 7, t: '0.333' },
-  { idx: 8, t: '0.389' },
-  { idx: 9, t: '0.444' },
-  { idx: 10, t: '0.500' },
+const fluidOptions = [
+  {
+    label: 'Air',
+    folder: '01_Air_rho=1_mu=1e-05_Wo=6.14',
+  },
+  {
+    label: 'Water',
+    folder: '02_Water_rho=1000_mu=1e-03_Wo=17.72',
+  },
+  {
+    label: 'Mercury',
+    folder: '03_Mercury_rho=13500_mu=1e+00_Wo=2.06',
+  },
 ];
 
-// Case mapping based on new folder structure (3x3 grid: density x viscosity)
-const caseMapping = {
-  // Air cases
-  '1_1e-5': 'case_01_rho=1_mu=1e-05_Wo=6.14',
-  '1_1e-3': 'case_02_rho=1_mu=1e-03_Wo=0.61',
-  '1_1e+0': 'case_03_rho=1_mu=1e+00_Wo=0.02',
-  
-  // Water cases
-  '1000_1e-5': 'case_04_rho=1000_mu=1e-05_Wo=177.25',
-  '1000_1e-3': 'case_05_rho=1000_mu=1e-03_Wo=17.72',
-  '1000_1e+0': 'case_06_rho=1000_mu=1e+00_Wo=0.56',
-  
-  // Mercury cases
-  '13500_1e-5': 'case_07_rho=13500_mu=1e-05_Wo=651.24',
-  '13500_1e-3': 'case_08_rho=13500_mu=1e-03_Wo=65.12',
-  '13500_1e+0': 'case_09_rho=13500_mu=1e+00_Wo=2.06',
-};
+const timeSteps = [
+  { idx: 1, t: '0.000' },
+  { idx: 2, t: '0.033' },
+  { idx: 3, t: '0.067' },
+  { idx: 4, t: '0.100' },
+  { idx: 5, t: '0.133' },
+  { idx: 6, t: '0.167' },
+  { idx: 7, t: '0.200' },
+  { idx: 8, t: '0.233' },
+  { idx: 9, t: '0.267' },
+  { idx: 10, t: '0.300' },
+  { idx: 11, t: '0.333' },
+  { idx: 12, t: '0.367' },
+  { idx: 13, t: '0.400' },
+  { idx: 14, t: '0.433' },
+  { idx: 15, t: '0.467' },
+];
 
-function getCaseFolder(density, viscosity) {
-  // Convert viscosity back to the exact format used in caseMapping
-  let viscosityKey;
-  if (viscosity === 1e-5) viscosityKey = '1e-5';
-  else if (viscosity === 1e-3) viscosityKey = '1e-3';
-  else if (viscosity === 1e+0) viscosityKey = '1e+0';
-  else viscosityKey = viscosity.toString();
-  
-  const key = `${density}_${viscosityKey}`;
-  const folder = caseMapping[key] || 'case_01_rho=1_mu=1e-05_Wo=6.14';
-  console.log('getCaseFolder:', { density, viscosity, key, folder });
-  return folder;
-}
-
-function getImagePath(density, viscosity, timeIdx) {
-  const folder = getCaseFolder(density, viscosity);
+function getImagePath(fluidIdx, timeIdx) {
+  const folder = fluidOptions[fluidIdx].folder;
   const tObj = timeSteps[timeIdx];
-  const path = `/snapshots/${folder}/snapshot_${String(tObj.idx).padStart(2,'0')}_t=${tObj.t}s.png`;
-  console.log('getImagePath:', { density, viscosity, timeIdx, folder, path });
-  return path;
+  return `/snapshots2/${folder}/snapshot_${String(tObj.idx).padStart(2,'0')}_t=${tObj.t}s.png`;
 }
 
 const PulsatileFlow = () => {
-  const [density, setDensity] = useState(densities[0]);
-  const [viscosity, setViscosity] = useState(viscosities[0]);
+  const [fluidIdx, setFluidIdx] = useState(0);
   const [timeIdx, setTimeIdx] = useState(0);
 
-  const imagePath = getImagePath(density, viscosity, timeIdx);
+  const imagePath = getImagePath(fluidIdx, timeIdx);
 
   return (
     <div className="min-h-screen bg-white py-6 px-4 sm:px-6 lg:px-8">
@@ -92,20 +72,16 @@ const PulsatileFlow = () => {
             <div className="flex-1 w-full flex items-center justify-center">
               <img 
                 src={imagePath}
-                alt={`Pulsatile flow for density ${density}, viscosity ${viscosity}, time ${timeSteps[timeIdx].t}s`}
+                alt={`Pulsatile flow for ${fluidOptions[fluidIdx].label}, time ${timeSteps[timeIdx].t}s`}
                 className="w-full h-full object-contain"
                 style={{ maxHeight: '500px', maxWidth: '800px' }}
                 onError={e => {
-                  console.log('Image failed to load:', imagePath);
                   e.currentTarget.style.opacity = '0.2';
                 }}
-                onLoad={() => console.log('Image loaded successfully:', imagePath)}
               />
             </div>
           </div>
         </div>
-
-
 
         {/* Time Slider - Below plot */}
         <div className="mt-6 flex justify-center">
@@ -130,43 +106,24 @@ const PulsatileFlow = () => {
           </div>
         </div>
 
-        {/* Parameter Sliders - Below Time slider */}
+        {/* Fluid Selector - Below Time slider */}
         <div className="mt-4 flex justify-center">
           <div className="bg-gray-50 rounded-lg p-4 shadow w-full max-w-md space-y-4">
-            {/* Density Slider */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2 text-center">
-                Density: {densityLabels[densities.indexOf(density)]} ({density} kg/m³)
+                Fluid: {fluidOptions[fluidIdx].label}
               </label>
               <input
                 type="range"
-                value={densities.indexOf(density)}
-                onChange={e => setDensity(densities[Number(e.target.value)])}
+                value={fluidIdx}
+                onChange={e => setFluidIdx(Number(e.target.value))}
                 min={0}
-                max={densities.length - 1}
+                max={fluidOptions.length - 1}
                 step={1}
                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
               />
               <div className="flex justify-between text-xs text-gray-500 mt-2">
-                {densityLabels.map((label, idx) => <span key={label}>{label}</span>)}
-              </div>
-            </div>
-            {/* Viscosity Slider */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2 text-center">
-                Viscosity: {viscosityLabels[viscosities.indexOf(viscosity)]} ({viscosity} Pa·s)
-              </label>
-              <input
-                type="range"
-                value={viscosities.indexOf(viscosity)}
-                onChange={e => setViscosity(viscosities[Number(e.target.value)])}
-                min={0}
-                max={viscosities.length - 1}
-                step={1}
-                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
-              />
-              <div className="flex justify-between text-xs text-gray-500 mt-2">
-                {viscosityLabels.map((label, idx) => <span key={label}>{label}</span>)}
+                {fluidOptions.map((fluid, idx) => <span key={fluid.label}>{fluid.label}</span>)}
               </div>
             </div>
           </div>
