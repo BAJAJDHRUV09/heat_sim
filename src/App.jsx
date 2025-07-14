@@ -613,56 +613,123 @@ function BoundaryLayerSimulation({ onBack }) {
 
 function HomePage({ onSelectSimulation }) {
   return (
-    <div className="p-8 bg-[#f0f0f0] min-h-screen text-[#333333]"> {/* Light grey background and dark text for Home page */}
-      <h1 className="text-4xl font-bold mb-8">Heat Transfer Simulations</h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      {/* Hero Section */}
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
+          <div className="text-center">
+            <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
+              Heat Transfer Simulations
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
+              Explore interactive simulations of various heat transfer and fluid dynamics phenomena
+            </p>
+          </div>
+        </div>
+      </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div 
-          className="bg-[#ffffff] rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-          onClick={() => onSelectSimulation('boundary-layer')}
-        >
-          <div className="p-6">
-            <h2 className="text-xl font-semibold mb-2 text-[#007bff]">Boundary Layer Analysis</h2> {/* Blue title */}
-            <p className="text-[#333333] mb-4">Interactive visualization of boundary layer development with adjustable parameters.</p> {/* Dark text */}
-            <div className="flex items-center text-[#007bff]"> {/* Blue link text */}
-              <span className="font-medium">Click to View</span>
-              <span className="ml-2 w-2 h-2 bg-[#007bff] rounded-full"></span> {/* Blue dot */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div 
+            className="group cursor-pointer transform transition-all duration-300 hover:scale-105"
+            onClick={() => onSelectSimulation('boundary-layer')}
+          >
+            <div className="relative h-full bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-white/50 backdrop-blur-sm">
+              {/* Icon Container */}
+              <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center text-white mb-4 group-hover:scale-110 transition-transform duration-300">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              
+              {/* Content */}
+              <h2 className="text-xl font-bold text-gray-800 mb-3 group-hover:text-gray-900 transition-colors">Boundary Layer Analysis</h2>
+              <p className="text-gray-600 text-sm leading-relaxed mb-4">Interactive visualization of boundary layer development with adjustable parameters.</p>
+              
+              {/* Action Button */}
+              <div className="flex items-center text-blue-600 font-semibold text-sm group-hover:text-blue-700 transition-colors">
+                <span>Explore Simulation</span>
+                <svg className="ml-2 w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          
+          <div 
+            className="group cursor-pointer transform transition-all duration-300 hover:scale-105"
+            onClick={() => onSelectSimulation('linear-transformation')}
+          >
+            <div className="relative h-full bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-white/50 backdrop-blur-sm">
+              {/* Icon Container */}
+              <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center text-white mb-4 group-hover:scale-110 transition-transform duration-300">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a2 2 0 004 4h4a2 2 0 002-2V5z" />
+                </svg>
+              </div>
+              
+              {/* Content */}
+              <h2 className="text-xl font-bold text-gray-800 mb-3 group-hover:text-gray-900 transition-colors">Linear Transformation</h2>
+              <p className="text-gray-600 text-sm leading-relaxed mb-4">Visualize 2D linear transformations with interactive matrix operations.</p>
+              
+              {/* Action Button */}
+              <div className="flex items-center text-orange-600 font-semibold text-sm group-hover:text-orange-700 transition-colors">
+                <span>Explore Simulation</span>
+                <svg className="ml-2 w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          
+          <div 
+            className="group cursor-pointer transform transition-all duration-300 hover:scale-105"
+            onClick={() => onSelectSimulation('pulsatile-flow')}
+          >
+            <div className="relative h-full bg-gradient-to-br from-teal-50 to-cyan-50 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-white/50 backdrop-blur-sm">
+              {/* Icon Container */}
+              <div className="w-16 h-16 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-xl flex items-center justify-center text-white mb-4 group-hover:scale-110 transition-transform duration-300">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              
+              {/* Content */}
+              <h2 className="text-xl font-bold text-gray-800 mb-3 group-hover:text-gray-900 transition-colors">Pulsatile Flow</h2>
+              <p className="text-gray-600 text-sm leading-relaxed mb-4">Visualize velocity profiles for pulsatile flow in three fluids (Air, Water, Mercury) with time evolution.</p>
+              
+              {/* Action Button */}
+              <div className="flex items-center text-teal-600 font-semibold text-sm group-hover:text-teal-700 transition-colors">
+                <span>Explore Simulation</span>
+                <svg className="ml-2 w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl shadow-md overflow-hidden opacity-75 border border-white/50">
+            <div className="p-6 text-gray-500">
+              <div className="w-16 h-16 bg-gradient-to-r from-gray-400 to-gray-500 rounded-xl flex items-center justify-center text-white mb-4">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h2 className="text-xl font-semibold mb-2">Coming Soon</h2>
+              <p className="text-sm">More heat transfer simulations will be available soon.</p>
             </div>
           </div>
         </div>
-        
-        <div 
-          className="bg-[#ffffff] rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-          onClick={() => onSelectSimulation('linear-transformation')}
-        >
-          <div className="p-6">
-            <h2 className="text-xl font-semibold mb-2 text-[#007bff]">Linear Transformation</h2>
-            <p className="text-[#333333] mb-4">Visualize 2D linear transformations with interactive matrix operations.</p>
-            <div className="flex items-center text-[#007bff]">
-              <span className="font-medium">Click to View</span>
-              <span className="ml-2 w-2 h-2 bg-[#007bff] rounded-full"></span>
-            </div>
-          </div>
-        </div>
-        
-        <div 
-          className="bg-[#ffffff] rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-          onClick={() => onSelectSimulation('pulsatile-flow')}
-        >
-          <div className="p-6">
-            <h2 className="text-xl font-semibold mb-2 text-[#007bff]">Pulsatile Flow</h2>
-            <p className="text-[#333333] mb-4">Interactive visualization of pulsatile flow with adjustable density, viscosity, radius, and time.</p>
-            <div className="flex items-center text-[#007bff]">
-              <span className="font-medium">Click to View</span>
-              <span className="ml-2 w-2 h-2 bg-[#007bff] rounded-full"></span>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-[#e0e0e0] rounded-xl shadow-md overflow-hidden opacity-50"> {/* Disabled card with light grey background */}
-          <div className="p-6 text-[#666666]"> {/* Medium grey text */}
-            <h2 className="text-xl font-semibold mb-2">Coming Soon</h2>
-            <p className="mb-4">More heat transfer simulations will be available soon.</p>
+      </div>
+
+      {/* Footer */}
+      <div className="bg-white/80 backdrop-blur-sm border-t border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center">
+            <p className="text-gray-500 text-sm">
+              © 2025 Heat Transfer Simulations. All rights reserved.
+            </p>
           </div>
         </div>
       </div>
