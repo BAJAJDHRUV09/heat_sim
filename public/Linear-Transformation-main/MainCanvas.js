@@ -1,8 +1,13 @@
 var MainSketch = function(mc) {
-    // TODO Mobie view on small pixels
-    // create boundary
-    mc.cwidth = window.innerWidth > 1100 ? window.innerWidth * 57 / 100 : window.innerWidth;
-    mc.cheight = window.innerWidth > 1100 ? window.innerHeight - (100) : window.innerHeight - window.innerHeight/2;
+    // Responsive canvas sizing
+    if (window.innerWidth <= 991) {
+        mc.cwidth = window.innerWidth;
+        // Use a reasonable height for mobile, e.g., 40% of viewport height
+        mc.cheight = Math.max(window.innerHeight * 0.4, 220);
+    } else {
+        mc.cwidth = window.innerWidth > 1100 ? window.innerWidth * 57 / 100 : window.innerWidth;
+        mc.cheight = window.innerWidth > 1100 ? window.innerHeight - (100) : window.innerHeight - window.innerHeight/2;
+    }
 
     mc.origin = {
         x : mc.cwidth / 2,
