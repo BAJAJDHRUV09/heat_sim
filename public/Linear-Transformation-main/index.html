@@ -40,44 +40,33 @@
         <div class="col-lg-5 main-steps" style="right: 0;">
           <hr>
           <ol class="main-steps_list">
-            <li class="mt-2">
-              In this step you need to enter the basis. Note that in this step the pairs of numbers assosiated with vectors are with respect to standart basis.
-            </li>
-
-          <div>
-            <span class="text-with-matrix">
-              Your first basis vector:&nbsp;  
-            </span>
-            <table class="matrix">
-                <tr>
-                    <td> <input type="text" name="field10" class="vector-input" data-identifier="vec1val1" size="2" placeholder="1"> </td> 
-                </tr>
-                <tr>
-                    <td> <input type="text" name="field01" class="vector-input" data-identifier="vec1val2" size="2" placeholder="0"> </td>
-                </tr>
-            </table>
-            <span class="text-with-matrix">
-              ,
-            </span>
-            <br>
-
-            <span class="text-with-matrix">
-              Your second basis vector:&nbsp;
-            </span>
-            <table class="matrix">
-              <tr>
-                  <td> <input type="text" name="field10" class="vector-input" data-identifier="vec2val1" size="2" placeholder="0"> </td> 
-              </tr>
-              <tr>
-                  <td> <input type="text" name="field01" class="vector-input" data-identifier="vec2val2" size="2" placeholder="1"> </td>
-              </tr>
-            </table>
-            <span class="text-with-matrix">
-              .
-            </span>
-          </div>
-          </ol>
-
+  <li class="mt-2">
+    In this step you need to enter the basis. Note that in this step the pairs of numbers assosiated with vectors are with respect to standart basis.
+  </li>
+  <div>
+    <span class="text-with-matrix">
+      Enter your 2×2 basis matrix:
+    </span>
+    <table class="matrix">
+      <tr>
+        <td>
+          <input type="text" name="field10" class="vector-input" data-identifier="vec1val1" size="2" placeholder="1" value="1">
+        </td>
+        <td>
+          <input type="text" name="field10" class="vector-input" data-identifier="vec2val1" size="2" placeholder="0" value="0">
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <input type="text" name="field01" class="vector-input" data-identifier="vec1val2" size="2" placeholder="0" value="0">
+        </td>
+        <td>
+          <input type="text" name="field01" class="vector-input" data-identifier="vec2val2" size="2" placeholder="1" value="1">
+        </td>
+      </tr>
+    </table>
+  </div>
+</ol>
         </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>

@@ -145,7 +145,7 @@ const Home = () => {
             className="text-center"
           >
             <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
-              Heat Transfer Simulations
+              Transport Process Simulations
             </h1>
             <p className="text-xl md:text-2xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
               Explore interactive simulations of various heat transfer and fluid dynamics phenomena
