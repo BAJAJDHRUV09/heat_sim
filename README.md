@@ -128,6 +128,3 @@ Contributions are welcome! Please:
 - Fork the repo and create a feature branch
 - Add or update documentation for any new features/pages
 - Submit a pull request with a clear description
-
-## License
-MIT License. See [LICENSE](LICENSE) for details.
